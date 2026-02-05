@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Request</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .terminal {
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #323232;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-button.close { background: #ff5f56; }
+        .terminal-button.minimize { background: #ffbd2e; }
+        .terminal-button.maximize { background: #27c93f; }
+
+        .terminal-body {
+            padding: 30px;
+            color: #00ff00;
+            line-height: 1.6;
+        }
+
+        .prompt {
+            color: #00ff00;
+        }
+
+        .output {
+            margin: 20px 0;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            color: #51cf66;
+        }
+
+        .question {
+            color: #74c0fc;
+            font-size: 1.2em;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            font-family: 'Courier New', monospace;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border: 2px solid #00ff00;
+            background: transparent;
+            color: #00ff00;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        button:hover {
+            background: #00ff00;
+            color: #1e1e1e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,255,0,0.3);
+        }
+
+        #noButton {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        #noButton:hover {
+            background: #ff6b6b;
+            color: #1e1e1e;
+            box-shadow: 0 5px 20px rgba(255,107,107,0.3);
+        }
+
+        .celebration {
+            display: none;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .celebration.active {
+            display: block;
+        }
+
+        .hearts {
+            font-size: 3em;
+            margin: 20px 0;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .typing {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-button close"></div>
+            <div class="terminal-button minimize"></div>
+            <div class="terminal-button maximize"></div>
+        </div>
+        <div class="terminal-body">
+            <div id="initial-content">
+                <div class="output">
+                    <span class="prompt">$</span> ./valentine_request.sh
+                </div>
+                <div class="output typing">
+                    Initializing romantic protocol...
+                </div>
+                <div class="output">
+                    <span class="success">✓</span> Heart.exe loaded successfully<br>
+                    <span class="success">✓</span> Feelings.dll initialized<br>
+                    <span class="success">✓</span> Love compiler ready
+                </div>
+                <div class="question">
+                    💝 Will you be my Valentine? 💝
+                </div>
+                <div class="buttons">
+                    <button id="yesButton">YES</button>
+                    <button id="noButton">NO</button>
+                </div>
+            </div>
+
+            <div id="celebration" class="celebration">
+                <div class="hearts">💖 💕 💗 💓 💝</div>
+                <div class="output success" style="font-size: 1.3em; text-align: center;">
+                    <span class="prompt">$</span> valentine_status<br><br>
+                    STATUS: ACCEPTED ✓<br>
+                    CONNECTION: ESTABLISHED<br>
+                    LOVE_LEVEL: MAXIMUM<br><br>
+                    💕 You've made me the happiest! 💕<br><br>
+                    Happy Valentine's Day! ❤️
+                </div>
+            </div>
+
+            <div id="rejection" class="celebration">
+                <div class="output error" style="text-align: center; font-size: 1.2em;">
+                    <span class="prompt">$</span> Error 404<br><br>
+                    <span class="error">⚠ ERROR: "NO" option not found in database</span><br><br>
+                    Rebooting system...<br>
+                    Please try again 😊
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const initialContent = document.getElementById('initial-content');
+        const celebration = document.getElementById('celebration');
+        const rejection = document.getElementById('rejection');
+
+        yesButton.addEventListener('click', function() {
+            initialContent.style.display = 'none';
+            celebration.classList.add('active');
+            
+            // Create falling hearts
+            createHearts();
+        });
+
+        noButton.addEventListener('click', function() {
+            // Move the button away when hovered
+            const randomX = Math.random() * (window.innerWidth - 200);
+            const randomY = Math.random() * (window.innerHeight - 100);
+            
+            // Show error message briefly
+            initialContent.style.opacity = '0.3';
+            rejection.classList.add('active');
+            
+            setTimeout(() => {
+                rejection.classList.remove('active');
+                initialContent.style.opacity = '1';
+            }, 2000);
+        });
+
+        // Make "NO" button run away on hover/touch
+        function moveNoButton() {
+            const terminal = document.querySelector('.terminal-body');
+            const rect = terminal.getBoundingClientRect();
+            
+            const maxX = rect.width - noButton.offsetWidth - 40;
+            const maxY = rect.height - noButton.offsetHeight - 40;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            noButton.style.position = 'absolute';
+            noButton.style.left = randomX + 'px';
+            noButton.style.top = randomY + 'px';
+        }
+        
+        noButton.addEventListener('mouseenter', moveNoButton);
+        noButton.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        function createHearts() {
+            const colors = ['#ff6b6b', '#ff8787', '#ffa5a5', '#ffc9c9', '#ffe3e3'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.style.position = 'fixed';
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = '-50px';
+                    heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                    heart.style.animation = `fall ${Math.random() * 3 + 2}s linear`;
+                    heart.style.opacity = Math.random();
+                    heart.style.pointerEvents = 'none';
+                    heart.style.zIndex = '1000';
+                    
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 200);
+            }
+        }
+
+        // Add falling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    top: 100vh;
+                    transform: translateX(${Math.random() * 100 - 50}px) rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
